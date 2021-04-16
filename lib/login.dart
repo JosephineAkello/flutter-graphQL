@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'home.dart';
-import 'register.dart';
 
 class Login extends StatefulWidget {
   createState() {
@@ -13,7 +12,14 @@ class LoginState extends State<Login> {
   bool _obscureText = true;
 
   Widget build(context) {
-    return SingleChildScrollView(
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Flutter GraphQL App',
+          ),
+          centerTitle: true,
+        ),
+    body: SingleChildScrollView(
       child: Form(
           key: _formKey,
           child: Container(
@@ -23,21 +29,9 @@ class LoginState extends State<Login> {
                 spaces(),
                 passwordDetails(),
                 spaces(),
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: loginButton(),
-                    ),
-                    SizedBox(
-                      width: 10.0,
-                    ),
-                    Expanded(
-                      child: registerButton(),
-                    ),
-                  ],
-                ),
+                loginButton(),  
               ]))),
-    );
+      ));
   }
 
   Widget spaces() {
@@ -103,19 +97,6 @@ class LoginState extends State<Login> {
             ));
       }},
       child: Text('Login'),
-    );
-  }
-
-    Widget registerButton() {
-    return ElevatedButton(
-      onPressed: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Register(),
-            ));
-      },
-      child: Text('Register'),
     );
   }
 }
