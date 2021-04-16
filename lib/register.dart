@@ -1,5 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_graphql/login.dart';
 import 'home.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'querymutation.dart';
+import 'graphqlConf.dart';
+import 'users.dart';
+import 'dart:convert';
+
+GraphQLConfiguration graphQLConfiguration = GraphQLConfiguration();
+QueryMutation addMutation = QueryMutation();
 
 class Register extends StatefulWidget {
   createState() {
@@ -11,29 +22,38 @@ class RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
   bool _obscureText = true;
 
+  final emailTextController = TextEditingController();
+  final passwordTextController = TextEditingController();
+  final nameTextController = TextEditingController();
+
   Widget build(context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'Flutter GraphQL App',
-          ),
-          centerTitle: true,
-        ),
-        body: SingleChildScrollView(
-          child: Form(
-              key: _formKey,
-              child: Container(
-                  padding: EdgeInsets.all(20.0),
-                  child: Column(children: [
-                    nameDetails(),
-                    spaces(),
-                    emailDetails(),
-                    spaces(),
-                    passwordDetails(),
-                    spaces(),
-                    loginButton()
-                  ]))),
-        ));
+    return SingleChildScrollView(
+      child: Form(
+          key: _formKey,
+          child: Container(
+              padding: EdgeInsets.all(20.0),
+              child: Column(children: [
+                nameDetails(),
+                spaces(),
+                emailDetails(),
+                spaces(),
+                passwordDetails(),
+                spaces(),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: registerButton2(),
+                    ),
+                    SizedBox(
+                      width: 10.0,
+                    ),
+                    Expanded(
+                      child: loginButton(),
+                    ),
+                  ],
+                ),
+              ]))),
+    );
   }
 
   Widget spaces() {
@@ -43,11 +63,12 @@ class RegisterState extends State<Register> {
   Widget nameDetails() {
     return TextFormField(
         keyboardType: TextInputType.emailAddress,
+        controller: nameTextController,
         decoration: InputDecoration(
           labelText: 'Full Name',
           hintText: 'Mojo Jojo',
           icon: new Icon(
-            Icons.mail,
+            Icons.person,
             color: Color(0xFF102253),
           ),
           border: OutlineInputBorder(
@@ -65,6 +86,7 @@ class RegisterState extends State<Register> {
   Widget emailDetails() {
     return TextFormField(
         keyboardType: TextInputType.emailAddress,
+        controller: emailTextController,
         decoration: InputDecoration(
           labelText: 'email',
           hintText: 'mojo@gmail.com',
@@ -87,6 +109,7 @@ class RegisterState extends State<Register> {
   Widget passwordDetails() {
     return TextFormField(
         obscureText: _obscureText,
+        controller: passwordTextController,
         decoration: InputDecoration(
           labelText: 'password',
           hintText: 'password',
@@ -106,22 +129,61 @@ class RegisterState extends State<Register> {
         });
   }
 
+  Widget registerButton2() {
+    return Mutation(
+      options: MutationOptions(
+        document: gql(QueryMutation()
+            .createUser), // this is the mutation string you just created
+        // you can update the cache based on results
+        update: (GraphQLDataProxy cache, QueryResult result) {
+          return cache;
+        },
+        // or do something with the result.data on completion
+        onCompleted: (dynamic resultData) {
+          print(resultData);
+        },
+      ),
+      builder: (
+        RunMutation runMutation,
+        QueryResult result,
+      ) {
+        return ElevatedButton(
+          onPressed: () async {
+            //    //will enable non-nullable here
+            if (_formKey.currentState.validate()) {
+              await runMutation({
+                "userData": {
+                  "email": emailTextController.text,
+                  "name": nameTextController.text,
+                  "password": passwordTextController.text
+                }
+              });
+            }
+            print("$nameTextController.text");
+            print("$emailTextController.text");
+            print("$passwordTextController.text");
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Home(),
+                ));
+          },
+          child: Text('Register'),
+        );
+      },
+    );
+  }
+
   Widget loginButton() {
     return ElevatedButton(
       onPressed: () {
-        //will enable non-nullable here
-        if (_formKey.currentState.validate()) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              backgroundColor: Color(0xFF9DACD4), content: Text('Processing')));
-
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => Home(),
-              ));
-        }
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Login(),
+            ));
       },
-      child: Text('Register'),
+      child: Text('Login'),
     );
   }
 }
