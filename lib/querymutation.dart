@@ -1,16 +1,12 @@
 class QueryMutation {
-  String addUser(String id, String name, String email, String password) {
-    return """
-      mutation{
-          addUser(id: "$id", name: "$name", lastName: "$email", age: $password){
-            id
-            name
-            email
-            password
-          }
-      }
-    """;
+  String loginUser = r''' 
+    query FetchUser($email: String!, $password: String!){
+  findFirstUser(where: {email : {equals: $email}, password: {equals: $password}}){
+  id,
+  name 
   }
+}
+    ''';
 
   String createUser = r'''
   mutation CreateUser($userData: UserCreateInput!){
