@@ -151,7 +151,7 @@ class RegisterState extends State<Register> {
           onPressed: () async {
             //    //will enable non-nullable here
             if (_formKey.currentState.validate()) {
-              await runMutation({
+              runMutation({
                 "userData": {
                   "email": emailTextController.text,
                   "name": nameTextController.text,
