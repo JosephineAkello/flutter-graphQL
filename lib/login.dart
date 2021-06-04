@@ -99,35 +99,38 @@ class LoginState extends State<Login> {
             //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             //         backgroundColor: Color(0xFF9DACD4),
             //         content: Text('Processing')));
-       return Query(
-        options: QueryOptions(
+       return  Mutation(
+        options: MutationOptions(
           document: gql(QueryMutation().loginUser),
-          variables: {
-            "email": emailLoginTextController.text,
-            "password": passwordLoginTextController.text
-          },
+         update: (GraphQLDataProxy cache, QueryResult result) {
+          return cache;
+         },
+         onCompleted: (dynamic resultData) {
+          print(resultData);
+        },
         ),
-        builder: (QueryResult result,
-            {VoidCallback refetch, FetchMore fetchMore}) {
-          if (result.hasException) {
-            return Text(result.exception.toString());
-          }
-
-          if (result.isLoading) {
-            return Text('Login you in...');
-          }
-
-          final Map userInfo = result.data['findFirstUser'];
-          final String userId = userInfo['id'];
-          final String username = userInfo['name'];
-
-          print('$userId');
-          print('$username');
-            return ElevatedButton(
+        builder: (
+        RunMutation runMutation,
+        QueryResult result,
+      ) {
+          return ElevatedButton(
+            onPressed: () async {
+            if(_formKey.currentState.validate()){
+              runMutation({
+                "userData" : {
+                   "email": emailLoginTextController.text,
+                   "password": passwordLoginTextController.text
+                   }
+              });
+            }
+          print('$emailLoginTextController.text');
+          print('$passwordLoginTextController.text');
+          Navigator.push(context, 
+           MaterialPageRoute(builder: (context) => Home()));
+            },
               child: Text('Login'),
-              onPressed: (){
-              refetch();
-            });
+          );
         });
-  }
+  
+}
 }
