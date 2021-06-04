@@ -6,7 +6,6 @@ import 'home.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'querymutation.dart';
 import 'graphqlConf.dart';
-import 'users.dart';
 import 'dart:convert';
 
 GraphQLConfiguration graphQLConfiguration = GraphQLConfiguration();
