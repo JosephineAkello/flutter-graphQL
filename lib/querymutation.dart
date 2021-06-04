@@ -1,9 +1,10 @@
 class QueryMutation {
   String loginUser = r''' 
-    query FetchUser($email: String!, $password: String!){
-  findFirstUser(where: {email : {equals: $email}, password: {equals: $password}}){
-  id,
-  name 
+ mutation LoginUser($userData: UserCreateInput!){
+  loginUser(data: $userData){
+    id,
+    userId,
+    user
   }
 }
     ''';
